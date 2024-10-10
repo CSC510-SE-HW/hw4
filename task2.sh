@@ -6,23 +6,31 @@ echo -e "\nStarting the script...\n"
 echo "Finding files that contain 'sample' and at least 3 occurrences of 'CSC510'..."
 echo -e "Filename\tCount\tSize"
 
-# Search for files containing the word "sample" and ensure the file list is unique using 'uniq'
-grep -rl "sample" dataset1/* | uniq | \
-while read file; do 
-    # Count the occurrences of the word "CSC510" in each file using 'grep -o' and 'wc -l'
-    count=$(grep -o "CSC510" "$file" | wc -l);     
-    # Check if the count of "CSC510" is 3 or more
-    if [ $count -ge 3 ]; then 
-        # Output the file name, count of "CSC510", and the file size
-        echo -e "$file\t$count\t$(stat -c %s "$file")"; 
-    fi 
-done | \
+# Find all files in the dataset1 directory that contain the word "sample"
+grep -rl "sample" dataset1/* | 
 
-# Sort the files by the count of "CSC510" (2nd column) and file size (3rd column) in descending order
-sort -k2,2nr -k3,3nr | \
+# For each file found, count the number of times "CSC510" occurs in it
+xargs grep -c "CSC510" | 
 
-# Use 'gawk' to replace 'file_' with 'filtered_' in the file names and print the result
-gawk -F'\t' '{sub(/file_/, "filtered_", $1); print $1 "\t" $2 "\t" $3}' 
+# Filter the output to include only files where "CSC510" occurs 3 or more times
+grep -E ':(3|[4-9]|[1-9][0-9]+)$' | 
+
+# Extract only the filenames from the previous output (ignoring the count part)
+cut -d':' -f1 | 
+
+# For each of the filtered filenames, output:
+# 1. The filename
+# 2. The count of "CSC510" in the file (using grep -c again)
+# 3. The size of the file (using stat -c %s)
+xargs -I {} bash -c 'echo "{} $(grep -c "CSC510" {}) $(stat -c %s "{}")"' | 
+
+# Sort the output:
+# 1. First by the number of "CSC510" occurrences (second column, in descending order)
+# 2. Then by file size (third column, in descending order)
+sort -k2,2nr -k3,3nr | 
+
+# Use gawk to replace "file_" with "filtered_" in the filenames and format the output:
+gawk '{ sub(/file_/, "filtered_"); printf "%s\t\t%s\t\t%s\n", $1, $2, $3 }'
 
 echo -e "\nScript execution complete.\n"
 
