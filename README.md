@@ -28,3 +28,11 @@ A script called `task2.sh` is created that performs the following operations:
 2. **Sorting**: Sort the list of filtered files in descending order based on the occurrences of "CSC510", and break ties by sorting the files based on their size.
 3. **Renaming**: Replace `file_` with `filtered_` in each file name and display the updated names.
 
+###Task 3: Passenger Filtering, Gender Replacement, and Age Calculation
+A script called task3.sh is created that performs the following operations:
+
+1. **Passenger Filtering**: Extracts passengers from the Titanic dataset (titanic.csv) who were in 2nd class and embarked at Southampton.
+2. **Gender Label Replacement**: Replaces the "male" and "female" labels with "M" and "F" respectively.
+3. **Age Calculation**: Calculates the average age of the filtered passengers.
+
+
